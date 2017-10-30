@@ -1,7 +1,7 @@
 SDK_DIR ?= sdk
-TAG ?= dev
+VERSION ?= vdev
 
-CFLAGS += -D'TAG="${TAG}"'
+CFLAGS += -D'VERSION="${VERSION}"'
 
 -include sdk/Makefile.mk
 

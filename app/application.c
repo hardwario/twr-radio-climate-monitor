@@ -1,21 +1,19 @@
 #include <application.h>
 
-#define FIRMWARE "bcf-kit-climate-monitor:" TAG
-
 #define BATTERY_UPDATE_INTERVAL (60 * 60 * 1000)
 
 #define UPDATE_INTERVAL (1 * 1000)
 
-#define TEMPERATURE_TAG_PUB_NO_CHANGE_INTEVAL (5 * 60 * 1000)
+#define TEMPERATURE_TAG_PUB_NO_CHANGE_INTEVAL (15 * 60 * 1000)
 #define TEMPERATURE_TAG_PUB_VALUE_CHANGE 0.2f
 
-#define HUMIDITY_TAG_PUB_NO_CHANGE_INTEVAL (5 * 60 * 1000)
+#define HUMIDITY_TAG_PUB_NO_CHANGE_INTEVAL (15 * 60 * 1000)
 #define HUMIDITY_TAG_PUB_VALUE_CHANGE 5.0f
 
-#define LUX_METER_TAG_PUB_NO_CHANGE_INTEVAL (5 * 60 * 1000)
-#define LUX_METER_TAG_PUB_VALUE_CHANGE 100.0f
+#define LUX_METER_TAG_PUB_NO_CHANGE_INTEVAL (15 * 60 * 1000)
+#define LUX_METER_TAG_PUB_VALUE_CHANGE 25.0f
 
-#define BAROMETER_TAG_PUB_NO_CHANGE_INTEVAL (5 * 60 * 1000)
+#define BAROMETER_TAG_PUB_NO_CHANGE_INTEVAL (15 * 60 * 1000)
 #define BAROMETER_TAG_PUB_VALUE_CHANGE 20.0f
 
 struct {
@@ -36,25 +34,11 @@ uint16_t button_event_count = 0;
 void button_event_handler(bc_button_t *self, bc_button_event_t event, void *event_param)
 {
     (void) self;
-    uint16_t *event_count = (uint16_t *) event_param;
+    (void) event_param;
 
     if (event == BC_BUTTON_EVENT_PRESS)
     {
         bc_led_pulse(&led, 100);
-
-        (*event_count)++;
-
-        bc_radio_pub_push_button(event_count);
-    }
-    else if (event == BC_BUTTON_EVENT_HOLD)
-    {
-        bc_radio_enroll_to_gateway();
-
-        bc_led_set_mode(&led, BC_LED_MODE_OFF);
-
-        bc_led_pulse(&led, 1000);
-
-        bc_radio_pub_info(FIRMWARE);
     }
 }
 
@@ -67,7 +51,7 @@ void battery_event_handler(bc_module_battery_event_t event, void *event_param)
 
     if (bc_module_battery_get_voltage(&voltage))
     {
-        bc_radio_pub_battery(BC_MODULE_BATTERY_FORMAT_MINI, &voltage);
+        bc_radio_pub_battery(&voltage);
     }
 }
 
@@ -84,7 +68,7 @@ void climate_module_event_handler(bc_module_climate_event_t event, void *event_p
         {
             if ((fabs(value - params.temperature.value) >= TEMPERATURE_TAG_PUB_VALUE_CHANGE) || (params.temperature.next_pub < bc_scheduler_get_spin_tick()))
             {
-                bc_radio_pub_thermometer(BC_TAG_TEMPERATURE_I2C_ADDRESS_DEFAULT, &value);
+                bc_radio_pub_temperature(BC_RADIO_PUB_CHANNEL_R1_I2C0_ADDRESS_DEFAULT, &value);
                 params.temperature.value = value;
                 params.temperature.next_pub = bc_scheduler_get_spin_tick() + TEMPERATURE_TAG_PUB_NO_CHANGE_INTEVAL;
             }
@@ -96,7 +80,7 @@ void climate_module_event_handler(bc_module_climate_event_t event, void *event_p
         {
             if ((fabs(value - params.humidity.value) >= HUMIDITY_TAG_PUB_VALUE_CHANGE) || (params.humidity.next_pub < bc_scheduler_get_spin_tick()))
             {
-                bc_radio_pub_humidity((0x40 | 0x0f), &value);
+                bc_radio_pub_humidity(BC_RADIO_PUB_CHANNEL_R3_I2C0_ADDRESS_DEFAULT, &value);
                 params.humidity.value = value;
                 params.humidity.next_pub = bc_scheduler_get_spin_tick() + HUMIDITY_TAG_PUB_NO_CHANGE_INTEVAL;
             }
@@ -106,9 +90,14 @@ void climate_module_event_handler(bc_module_climate_event_t event, void *event_p
     {
         if (bc_module_climate_get_illuminance_lux(&value))
         {
-            if ((fabs(value - params.illuminance.value) >= LUX_METER_TAG_PUB_VALUE_CHANGE) || (params.illuminance.next_pub < bc_scheduler_get_spin_tick()))
+            if (value < 1)
             {
-                bc_radio_pub_luminosity(BC_TAG_LUX_METER_I2C_ADDRESS_DEFAULT, &value);
+                value = 0;
+            }
+            if ((fabs(value - params.illuminance.value) >= LUX_METER_TAG_PUB_VALUE_CHANGE) || (params.illuminance.next_pub < bc_scheduler_get_spin_tick()) ||
+                    ((value == 0) && (params.illuminance.value != 0)) || ((value > 1) && (params.illuminance.value == 0)))
+            {
+                bc_radio_pub_luminosity(BC_RADIO_PUB_CHANNEL_R1_I2C0_ADDRESS_DEFAULT, &value);
                 params.illuminance.value = value;
                 params.illuminance.next_pub = bc_scheduler_get_spin_tick() + LUX_METER_TAG_PUB_NO_CHANGE_INTEVAL;
             }
@@ -127,7 +116,7 @@ void climate_module_event_handler(bc_module_climate_event_t event, void *event_p
                     return;
                 }
 
-                bc_radio_pub_barometer(0x60, &value, &meter);
+                bc_radio_pub_barometer(BC_RADIO_PUB_CHANNEL_R1_I2C0_ADDRESS_DEFAULT, &value, &meter);
                 params.pressure.value = value;
                 params.pressure.next_pub = bc_scheduler_get_spin_tick() + BAROMETER_TAG_PUB_NO_CHANGE_INTEVAL;
             }
@@ -139,9 +128,9 @@ void application_init(void)
 {
     // Initialize LED
    bc_led_init(&led, BC_GPIO_LED, false, false);
-   bc_led_set_mode(&led, BC_LED_MODE_ON);
+   bc_led_set_mode(&led, BC_LED_MODE_OFF);
 
-   bc_radio_init();
+   bc_radio_init(BC_RADIO_MODE_NODE_SLEEPING);
 
    // Initialize button
    bc_button_init(&button, BC_GPIO_BUTTON, BC_GPIO_PULL_DOWN, false);
@@ -158,8 +147,7 @@ void application_init(void)
    bc_module_climate_set_event_handler(climate_module_event_handler, NULL);
    bc_module_climate_measure_all_sensors();
 
-   bc_radio_enroll_to_gateway();
-   bc_radio_pub_info(FIRMWARE);
+   bc_radio_pairing_request("kit-climate-monitor", VERSION);
 
-   bc_led_set_mode(&led, BC_LED_MODE_OFF);
+   bc_led_pulse(&led, 2000);
 }
