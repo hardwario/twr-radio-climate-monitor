@@ -1,8 +1,12 @@
 #include <application.h>
 
-#define BATTERY_UPDATE_INTERVAL (60 * 60 * 1000)
+#define SERVICE_INTERVAL_INTERVAL (60 * 60 * 1000)
+#define BATTERY_UPDATE_INTERVAL   (60 * 60 * 1000)
 
-#define UPDATE_INTERVAL (1 * 1000)
+#define UPDATE_SERVICE_INTERVAL            (5 * 1000)
+#define UPDATE_NORMAL_INTERVAL             (10 * 1000)
+#define BAROMETER_UPDATE_SERVICE_INTERVAL  (1 * 60 * 1000)
+#define BAROMETER_UPDATE_NORMAL_INTERVAL   (5 * 60 * 1000)
 
 #define TEMPERATURE_TAG_PUB_NO_CHANGE_INTEVAL (15 * 60 * 1000)
 #define TEMPERATURE_TAG_PUB_VALUE_CHANGE 0.2f
@@ -26,6 +30,9 @@ struct {
 
 // LED instance
 bc_led_t led;
+
+// Thermometer instance
+bc_tmp112_t tmp112;
 
 // Button instance
 bc_button_t button;
@@ -124,30 +131,56 @@ void climate_module_event_handler(bc_module_climate_event_t event, void *event_p
     }
 }
 
+void switch_to_normal_mode_task(void *param)
+{
+    bc_module_climate_set_update_interval_thermometer(UPDATE_NORMAL_INTERVAL);
+    bc_module_climate_set_update_interval_hygrometer(UPDATE_NORMAL_INTERVAL);
+    bc_module_climate_set_update_interval_lux_meter(UPDATE_NORMAL_INTERVAL);
+    bc_module_climate_set_update_interval_barometer(BAROMETER_UPDATE_SERVICE_INTERVAL);
+
+    bc_scheduler_unregister(bc_scheduler_get_current_task_id());
+}
+
 void application_init(void)
 {
     // Initialize LED
-   bc_led_init(&led, BC_GPIO_LED, false, false);
-   bc_led_set_mode(&led, BC_LED_MODE_OFF);
+    bc_led_init(&led, BC_GPIO_LED, false, false);
+    bc_led_set_mode(&led, BC_LED_MODE_OFF);
 
-   bc_radio_init(BC_RADIO_MODE_NODE_SLEEPING);
+    // Initialize thermometer sensor on core module
+    bc_tmp112_init(&tmp112, BC_I2C_I2C0, 0x49);
 
-   // Initialize button
-   bc_button_init(&button, BC_GPIO_BUTTON, BC_GPIO_PULL_DOWN, false);
-   bc_button_set_event_handler(&button, button_event_handler, &button_event_count);
+    // Initialize radio
+    bc_radio_init(BC_RADIO_MODE_NODE_SLEEPING);
 
-   // Initialize battery
-   bc_module_battery_init(BC_MODULE_BATTERY_FORMAT_MINI);
-   bc_module_battery_set_event_handler(battery_event_handler, NULL);
-   bc_module_battery_set_update_interval(BATTERY_UPDATE_INTERVAL);
+    // Initialize button
+    bc_button_init(&button, BC_GPIO_BUTTON, BC_GPIO_PULL_DOWN, false);
+    bc_button_set_event_handler(&button, button_event_handler, &button_event_count);
 
-   // Initialize climate module
-   bc_module_climate_init();
-   bc_module_climate_set_update_interval_all_sensors(UPDATE_INTERVAL);
-   bc_module_climate_set_event_handler(climate_module_event_handler, NULL);
-   bc_module_climate_measure_all_sensors();
+    // Initialize battery
+    bc_module_battery_init(BC_MODULE_BATTERY_FORMAT_MINI);
+    bc_module_battery_set_event_handler(battery_event_handler, NULL);
+    bc_module_battery_set_update_interval(BATTERY_UPDATE_INTERVAL);
 
-   bc_radio_pairing_request("kit-climate-monitor", VERSION);
+    // // // Initialize climate module
+    bc_module_climate_init();
+    bc_module_climate_set_event_handler(climate_module_event_handler, NULL);
+    bc_module_climate_set_update_interval_thermometer(UPDATE_SERVICE_INTERVAL);
+    bc_module_climate_set_update_interval_hygrometer(UPDATE_SERVICE_INTERVAL);
+    bc_module_climate_set_update_interval_lux_meter(UPDATE_SERVICE_INTERVAL);
+    bc_module_climate_set_update_interval_barometer(BAROMETER_UPDATE_NORMAL_INTERVAL);
+    bc_module_climate_measure_all_sensors();
 
-   bc_led_pulse(&led, 2000);
+    bc_radio_pairing_request("kit-climate-monitor", VERSION);
+
+    bc_scheduler_register(switch_to_normal_mode_task, NULL, SERVICE_INTERVAL_INTERVAL);
+
+    bc_led_pulse(&led, 2000);
 }
+
+// void application_task(void)
+// {
+
+//         bc_i2c_memory_write_16b(BC_I2C_I2C0, 0x44, 0x01, 0xc810);
+//         bc_scheduler_plan_current_now();
+// }
