@@ -1,0 +1,5 @@
+article: https://www.bigclown.com/doc/projects/wireless-climate-monitor/
+assembly:
+  - name: BigClown Climate Module
+  - name: BigClown Core Module
+  - name: BigClown Mini Battery Module
