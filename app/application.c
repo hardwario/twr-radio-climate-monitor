@@ -51,14 +51,16 @@ void button_event_handler(bc_button_t *self, bc_button_event_t event, void *even
 
 void battery_event_handler(bc_module_battery_event_t event, void *event_param)
 {
-    (void) event;
     (void) event_param;
 
     float voltage;
 
-    if (bc_module_battery_get_voltage(&voltage))
+    if (event == BC_MODULE_BATTERY_EVENT_UPDATE)
     {
-        bc_radio_pub_battery(&voltage);
+        if (bc_module_battery_get_voltage(&voltage))
+        {
+            bc_radio_pub_battery(&voltage);
+        }
     }
 }
 
