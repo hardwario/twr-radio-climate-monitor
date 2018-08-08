@@ -160,11 +160,11 @@ void application_init(void)
     bc_button_set_event_handler(&button, button_event_handler, &button_event_count);
 
     // Initialize battery
-    bc_module_battery_init(BC_MODULE_BATTERY_FORMAT_MINI);
+    bc_module_battery_init();
     bc_module_battery_set_event_handler(battery_event_handler, NULL);
     bc_module_battery_set_update_interval(BATTERY_UPDATE_INTERVAL);
 
-    // // // Initialize climate module
+    // Initialize climate module
     bc_module_climate_init();
     bc_module_climate_set_event_handler(climate_module_event_handler, NULL);
     bc_module_climate_set_update_interval_thermometer(UPDATE_SERVICE_INTERVAL);
@@ -173,16 +173,9 @@ void application_init(void)
     bc_module_climate_set_update_interval_barometer(BAROMETER_UPDATE_NORMAL_INTERVAL);
     bc_module_climate_measure_all_sensors();
 
-    bc_radio_pairing_request("kit-climate-monitor", VERSION);
+    bc_radio_pairing_request("climate-monitor", VERSION);
 
     bc_scheduler_register(switch_to_normal_mode_task, NULL, SERVICE_INTERVAL_INTERVAL);
 
     bc_led_pulse(&led, 2000);
 }
-
-// void application_task(void)
-// {
-
-//         bc_i2c_memory_write_16b(BC_I2C_I2C0, 0x44, 0x01, 0xc810);
-//         bc_scheduler_plan_current_now();
-// }
