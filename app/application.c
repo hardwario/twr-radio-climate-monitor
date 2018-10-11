@@ -138,7 +138,7 @@ void switch_to_normal_mode_task(void *param)
     bc_module_climate_set_update_interval_thermometer(UPDATE_NORMAL_INTERVAL);
     bc_module_climate_set_update_interval_hygrometer(UPDATE_NORMAL_INTERVAL);
     bc_module_climate_set_update_interval_lux_meter(UPDATE_NORMAL_INTERVAL);
-    bc_module_climate_set_update_interval_barometer(BAROMETER_UPDATE_SERVICE_INTERVAL);
+    bc_module_climate_set_update_interval_barometer(BAROMETER_UPDATE_NORMAL_INTERVAL);
 
     bc_scheduler_unregister(bc_scheduler_get_current_task_id());
 }
@@ -170,7 +170,7 @@ void application_init(void)
     bc_module_climate_set_update_interval_thermometer(UPDATE_SERVICE_INTERVAL);
     bc_module_climate_set_update_interval_hygrometer(UPDATE_SERVICE_INTERVAL);
     bc_module_climate_set_update_interval_lux_meter(UPDATE_SERVICE_INTERVAL);
-    bc_module_climate_set_update_interval_barometer(BAROMETER_UPDATE_NORMAL_INTERVAL);
+    bc_module_climate_set_update_interval_barometer(BAROMETER_UPDATE_SERVICE_INTERVAL);
     bc_module_climate_measure_all_sensors();
 
     bc_radio_pairing_request("climate-monitor", VERSION);
