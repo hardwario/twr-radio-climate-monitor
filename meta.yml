@@ -1,18 +1,18 @@
 article: https://www.bigclown.com/doc/projects/radio-climate-monitor/
 images:
   - title:
-    url: https://www.bigclown.com/kits/climate-monitor/main.png
+    url: https://cdn.myshoptet.com/usr/shop.hardwario.com/user/shop/category_portrait/165-2_climate-monitor-kit-a1.jpg?5de56e1c
 articles:
   - title: Stop the Mold with BigClown Climate Module
-    url: https://www.hackster.io/jakub-smejkal/stop-the-mold-with-bigclown-climate-module-d01b1f
+    url: https://www.hackster.io/jakub-smejkal/stop-the-mold-with-hardwario-iot-kit-climate-module-d01b1f
     description: Stop the mold from spreading in your house or office with this simple device. Just put it into the moldy room and watch the humidity.
     images:
-      - url: https://hackster.imgix.net/uploads/attachments/929941/_PrtXMbCiOz.blob?auto=compress%2Cformat&w=900&h=675&fit=min
+      - url: https://hackster.imgix.net/uploads/attachments/1050352/_wN9YZNksu2.blob?auto=compress%2Cformat&w=900&h=675&fit=min
   - title: BigClown Smart Fridge Monitor
-    url: https://www.hackster.io/jakub-smejkal/bigclown-smart-fridge-monitor-17e9bd
+    url: https://www.hackster.io/157744/hardwario-iot-kit-smart-fridge-monitor-17e9bd
     description: Overfreezing you fridge is not good for your food and power saving, with this fridge monitor, you will always know the temperature in there.
     images:
-      - url: https://hackster.imgix.net/uploads/attachments/927494/fridge_monitor_mk7wtEECtR.png?auto=compress%2Cformat&w=900&h=675&fit=min
+      - url: https://hackster.imgix.net/uploads/attachments/1050365/_t7ejAVROc3.blob?auto=compress%2Cformat&w=900&h=675&fit=min
 assembly:
   - name: BigClown Climate Module
   - name: BigClown Core Module
