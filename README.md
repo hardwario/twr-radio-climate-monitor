@@ -9,7 +9,7 @@
 
 See the project documentation on this link:
 
-**https://www.hardwario.com/doc/projects/radio-climate-monitor/**
+**https://www.bigclown.com/doc/projects/radio-climate-monitor/**
 
 ## License
 
