@@ -1,19 +1,19 @@
 article: https://www.bigclown.com/doc/projects/radio-climate-monitor/
 images:
   - title:
-    url: https://cdn.myshoptet.com/usr/shop.hardwario.com/user/shop/category_portrait/165-2_climate-monitor-kit-a1.jpg?5de56e1c
+    url: https://github.com/hardwario/website/blob/master/static/kits-images/climate-monitor/main.png
 articles:
-  - title: Stop the Mold with BigClown Climate Module
+  - title: Stop the Mold with HARDWARIO Climate Module
     url: https://www.hackster.io/jakub-smejkal/stop-the-mold-with-hardwario-iot-kit-climate-module-d01b1f
     description: Stop the mold from spreading in your house or office with this simple device. Just put it into the moldy room and watch the humidity.
     images:
       - url: https://hackster.imgix.net/uploads/attachments/1050352/_wN9YZNksu2.blob?auto=compress%2Cformat&w=900&h=675&fit=min
-  - title: BigClown Smart Fridge Monitor
+  - title: HARDWARIO Smart Fridge Monitor
     url: https://www.hackster.io/157744/hardwario-iot-kit-smart-fridge-monitor-17e9bd
     description: Overfreezing you fridge is not good for your food and power saving, with this fridge monitor, you will always know the temperature in there.
     images:
       - url: https://hackster.imgix.net/uploads/attachments/1050365/_t7ejAVROc3.blob?auto=compress%2Cformat&w=900&h=675&fit=min
 assembly:
-  - name: BigClown Climate Module
-  - name: BigClown Core Module
-  - name: BigClown Mini Battery Module
+  - name: HARDWARIO Climate Module
+  - name: HARDWARIO Core Module
+  - name: HARDWARIO Mini Battery Module
