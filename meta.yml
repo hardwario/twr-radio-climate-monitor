@@ -1,7 +1,7 @@
 article: https://www.bigclown.com/doc/projects/radio-climate-monitor/
 images:
   - title:
-    url: https://github.com/hardwario/website/blob/master/static/kits-images/climate-monitor/main.png
+    url: https://raw.githubusercontent.com/hardwario/website/master/static/kits-images/climate-monitor/main.png
 articles:
   - title: Stop the Mold with HARDWARIO Climate Module
     url: https://www.hackster.io/jakub-smejkal/stop-the-mold-with-hardwario-iot-kit-climate-module-d01b1f
