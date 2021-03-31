@@ -1,17 +1,17 @@
-dist: trusty
-language: c
-addons:
-  apt:
-    sources:
-      - sourceline: ppa:team-gcc-arm-embedded/ppa
-    packages:
-      - gcc-arm-embedded
+language: python
+env:
+  - VERSION=${TRAVIS_TAG:-vdev}
+install:
+  - pip install -U platformio
 script:
-  - make release OUT=bcf-radio-climate-monitor-${TRAVIS_TAG} VERSION=${TRAVIS_TAG}
+  - export PLATFORMIO_BUILD_FLAGS="-D'VERSION=\"${VERSION}\"'"
+  - pio run -e release
+  - mv .pio/build/release/firmware.bin twr-radio-climate-monitor-${VERSION}.bin
+  - ls -lha
 deploy:
   skip_cleanup: true
   file_glob: true
-  file: out/release/*.bin
+  file: ./*.bin
   api_key: ${GITHUB_KEY}
   provider: releases
   overwrite: true
