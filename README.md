@@ -2,8 +2,7 @@
 
 # Firmware for HARDWARIO Radio Climate Monitor
 
-[![Travis](https://img.shields.io/travis/bigclownlabs/bcf-radio-climate-monitor/master.svg)](https://travis-ci.org/bigclownlabs/bcf-radio-climate-monitor)
-[![Release](https://img.shields.io/github/release/bigclownlabs/bcf-radio-climate-monitor.svg)](https://github.com/bigclownlabs/bcf-radio-climate-monitor/releases)
+[![Travis](https://travis-ci.org/hardwario/twr-radio-climate-monitor.svg?branch=master)](https://travis-ci.org/hardwario/twr-radio-climate-monitor)[![Release](https://img.shields.io/github/release/bigclownlabs/bcf-radio-climate-monitor.svg)](https://github.com/bigclownlabs/bcf-radio-climate-monitor/releases)
 [![License](https://img.shields.io/github/license/bigclownlabs/bcf-radio-climate-monitor.svg)](https://github.com/bigclownlabs/bcf-radio-climate-monitor/blob/master/LICENSE)
 [![Twitter](https://img.shields.io/twitter/follow/hardwario_en.svg?style=social&label=Follow)](https://twitter.com/hardwario_en)
 
