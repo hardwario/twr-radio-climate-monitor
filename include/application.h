@@ -5,8 +5,8 @@
 #define VERSION "vdev"
 #endif
 
-#include <twr.h>
 #include <bcl.h>
+#include <twr.h>
 
 typedef struct
 {

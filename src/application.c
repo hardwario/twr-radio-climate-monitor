@@ -155,6 +155,8 @@ void application_init(void)
     // Initialize radio
     twr_radio_init(TWR_RADIO_MODE_NODE_SLEEPING);
 
+    twr_log_init(TWR_LOG_LEVEL_DUMP, TWR_LOG_TIMESTAMP_ABS);
+
     // Initialize button
     twr_button_init(&button, TWR_GPIO_BUTTON, TWR_GPIO_PULL_DOWN, false);
     twr_button_set_event_handler(&button, button_event_handler, &button_event_count);
