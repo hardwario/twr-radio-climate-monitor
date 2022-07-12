@@ -1,34 +1,52 @@
-name: build
+name: main
+
 on:
   push:
-    branches: [main, master]
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
   release:
-    types: [published]
+    types: [ published ]
   workflow_dispatch:
+
+env:
+  BUILD_TYPE: release
+  VERSION: ${GITHUB_REF##*/}
+  REPOSITORY_NAME: ${GITHUB_REPOSITORY##*/}
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: Install Python dependencies
-        uses: py-actions/py-dependency-install@v2
-        with:
-          path: "requirements.txt"
-          update-pip: "true"
-          update-setuptools: "false"
-          update-wheel: "false"
-      - name: Build PlatformIO project
-        run: pio run -e release
-      - name: Set helper variables
-        if: ${{ github.event_name == 'release' }}
-        run: |
-          echo "GITHUB_TAG=${GITHUB_REF#refs/*/}" | tee -a $GITHUB_ENV
-          echo "REPOSITORY_NAME=${GITHUB_REPOSITORY##*/}" | tee -a $GITHUB_ENV
-          mv .pio/build/release/firmware.bin ${GITHUB_REPOSITORY##*/}-${GITHUB_REF#refs/*/}.bin
-      - name: Publish to GitHub Releases
-        if: ${{ github.event_name == 'release' }}
-        uses: softprops/action-gh-release@v0.1.5
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-        with:
-          files: ${{ env.REPOSITORY_NAME }}-${{ env.GITHUB_TAG }}.bin
+    - uses: actions/checkout@v3
+      with:
+        submodules: recursive
+    - name: Setup GNU Arm Embedded Toolchain
+      uses: carlosperate/arm-none-eabi-gcc-action@v1.4.0
+
+    - name: Setup Ninja
+      uses: ashutoshvarma/setup-ninja@v1.1
+
+    - name: Configure CMake
+      run: cmake -B ${{github.workspace}}/obj/${{env.BUILD_TYPE}} . -G Ninja -DCMAKE_TOOLCHAIN_FILE=${{github.workspace}}/sdk/toolchain/toolchain.cmake -DTYPE=${{env.BUILD_TYPE}}
+
+    - name: Build With Ninja
+      run: ninja -C ${{github.workspace}}/obj/${{env.BUILD_TYPE}}
+
+    - name: Rename Firmware
+      if: ${{ github.event_name == 'release' }}
+      run: mv ${{github.workspace}}/out/release/firmware.bin ${{env.REPOSITORY_NAME}}-${{env.VERSION}}.bin
+
+    - name: Setup env
+      if: ${{ github.event_name == 'release' }}
+      run: |
+        echo "REPORSIORY=${{env.REPOSITORY_NAME}}" >> "$GITHUB_ENV"
+        echo "TAG=${{env.VERSION}}" >> "$GITHUB_ENV"
+
+    - name: Release
+      if: ${{ github.event_name == 'release' }}
+      uses: softprops/action-gh-release@v0.1.5
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+      with:
+        files: ${{env.REPORSIORY}}-${{env.TAG}}.bin
