@@ -11,7 +11,7 @@ on:
 
 env:
   BUILD_TYPE: release
-  VERSION: ${GITHUB_REF##*/}
+  FW_VERSION: ${GITHUB_REF##*/}
   REPOSITORY_NAME: ${GITHUB_REPOSITORY##*/}
 
 jobs:
@@ -24,6 +24,12 @@ jobs:
     - name: Setup GNU Arm Embedded Toolchain
       uses: carlosperate/arm-none-eabi-gcc-action@v1.4.0
 
+    - name: Setup env
+      if: ${{ github.event_name == 'release' }}
+      run: |
+        echo "REPORSIORY=${{env.REPOSITORY_NAME}}" >> "$GITHUB_ENV"
+        echo "FW_VERSION=${{env.FW_VERSION}}" >> "$GITHUB_ENV"
+
     - name: Setup Ninja
       uses: ashutoshvarma/setup-ninja@v1.1
 
@@ -35,13 +41,7 @@ jobs:
 
     - name: Rename Firmware
       if: ${{ github.event_name == 'release' }}
-      run: mv ${{github.workspace}}/out/release/firmware.bin ${{env.REPOSITORY_NAME}}-${{env.VERSION}}.bin
-
-    - name: Setup env
-      if: ${{ github.event_name == 'release' }}
-      run: |
-        echo "REPORSIORY=${{env.REPOSITORY_NAME}}" >> "$GITHUB_ENV"
-        echo "TAG=${{env.VERSION}}" >> "$GITHUB_ENV"
+      run: mv ${{github.workspace}}/out/release/firmware.bin ${{env.REPOSITORY_NAME}}-${{env.FW_VERSION}}.bin
 
     - name: Release
       if: ${{ github.event_name == 'release' }}
@@ -49,4 +49,4 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ github.token }}
       with:
-        files: ${{env.REPORSIORY}}-${{env.TAG}}.bin
+        files: ${{env.REPORSIORY}}-${{env.FW_VERSION}}.bin
