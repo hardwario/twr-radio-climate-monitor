@@ -25,7 +25,6 @@ jobs:
       uses: carlosperate/arm-none-eabi-gcc-action@v1.4.0
 
     - name: Setup env
-      if: ${{ github.event_name == 'release' }}
       run: |
         echo "REPORSIORY=${{env.REPOSITORY_NAME}}" >> "$GITHUB_ENV"
         echo "FW_VERSION=${{env.FW_VERSION}}" >> "$GITHUB_ENV"
