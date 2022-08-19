@@ -173,7 +173,7 @@ void application_init(void)
     twr_module_climate_set_update_interval_barometer(BAROMETER_UPDATE_SERVICE_INTERVAL);
     twr_module_climate_measure_all_sensors();
 
-    twr_radio_pairing_request("climate-monitor", VERSION);
+    twr_radio_pairing_request("climate-monitor", FW_VERSION);
 
     twr_scheduler_register(switch_to_normal_mode_task, NULL, SERVICE_INTERVAL_INTERVAL);
 
